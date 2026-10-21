@@ -72,3 +72,70 @@ export const me = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ error: 'Failed to fetch current user' });
   }
 };
+
+
+export const register = async (req: Request, res: Response) => {
+  try {
+    const { name, email, password, role = 'PROMOTER', phone, skills, experience } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Name, email, and password are required.' });
+    }
+
+    const existing = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+    });
+    if (existing) {
+      return res.status(400).json({ error: 'User with this email already exists.' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const assignedRole = role === 'CLIENT' ? 'CLIENT' : 'PROMOTER';
+
+    const user = await prisma.user.create({
+      data: {
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        passwordHash,
+        role: assignedRole,
+        ...(assignedRole === 'PROMOTER'
+          ? {
+              promoterProfile: {
+                create: {
+                  phone: phone || '',
+                  skills: skills || 'General Staffing',
+                  experience: experience || '1 year',
+                },
+              },
+            }
+          : {
+              clientProfile: {
+                create: {
+                  company: name.trim(),
+                  phone: phone || '',
+                },
+              },
+            }),
+      },
+      include: {
+        clientProfile: true,
+        promoterProfile: true,
+      },
+    });
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role, name: user.name },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '7d' }
+    );
+
+    const sanitizedUser = sanitizeUserForRole(user, user.role);
+
+    return res.status(201).json({
+      token,
+      user: sanitizedUser,
+    });
+  } catch (error: any) {
+    console.error('Registration error:', error);
+    return res.status(500).json({ error: 'Failed to register account.' });
+  }
+};
