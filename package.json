@@ -2,7 +2,7 @@
   "name": "eventconnect-server",
   "version": "1.0.0",
   "description": "Backend API and Socket.IO real-time server for EventConnect",
-  "main": "src/server.ts",
+  "main": "dist/server.js",
   "scripts": {
     "build": "prisma generate && tsc",
     "postinstall": "prisma generate",
