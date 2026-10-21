@@ -2,11 +2,11 @@
   "name": "eventconnect-server",
   "version": "1.0.0",
   "description": "Backend API and Socket.IO real-time server for EventConnect",
-  "main": "dist/server.js",
+  "main": "server.js",
   "scripts": {
-    "build": "prisma generate && tsc",
+    "build": "prisma generate",
     "postinstall": "prisma generate",
-    "start": "node dist/server.js",
+    "start": "node server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
@@ -22,6 +22,8 @@
     "jsonwebtoken": "^9.0.2",
     "prisma": "^6.19.3",
     "socket.io": "^4.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -30,9 +32,7 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.5",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.3"
+    "ts-node-dev": "^2.0.0"
   },
   "allowScripts": {
     "@prisma/client@6.19.3": true,
