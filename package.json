@@ -4,8 +4,9 @@
   "description": "Backend API and Socket.IO real-time server for EventConnect",
   "main": "src/server.ts",
   "scripts": {
-    "build": "tsc --noEmit",
-    "start": "ts-node src/server.ts",
+    "build": "prisma generate && tsc",
+    "postinstall": "prisma generate",
+    "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
